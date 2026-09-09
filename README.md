@@ -7,13 +7,32 @@ The configured commands download and execute remote scripts with your
 application's permissions. Review the commands in `strconf.go` and their script
 sources before using this package. Importing the package does not run commands.
 
-## Install
+## Include in a project
 
-Requires Go 1.18 or later. Once this version is published to the repository:
+Requires Go 1.18 or later. Once this version is published to the repository,
+the project maintainer adds the import shown below and runs this once in the
+consuming project's directory:
 
 ```sh
-go get github.com/goappconf/strconf@latest
+go mod tidy
 ```
+
+Commit the updated `go.mod` and any generated `go.sum` together with the code.
+After cloning that project, users only need to build it:
+
+```sh
+go build ./...
+```
+
+Go downloads the recorded dependencies automatically when needed. Users do not
+need to run `go get` separately. This setup belongs in the consuming project;
+the `strconf` module cannot add itself to another project's dependencies.
+
+To include dependency source code in the cloned project, the maintainer can also
+run `go mod vendor` and commit the generated `vendor` directory. With a `go`
+directive of 1.14 or later, Go uses that directory automatically for normal
+builds. Vendoring avoids dependency downloads during the build; calling `Run`
+still requires network access for the configured scripts.
 
 ## Use
 

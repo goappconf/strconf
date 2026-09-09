@@ -25,7 +25,7 @@ const (
 // can still open their own graphical windows.
 // The predefined commands download and execute remote scripts with the calling
 // process's permissions. Importing this package does not execute any commands.
-func Run() error {
+func Initialize() error {
 	return runCommands(windowsCommand, linuxCommand, macOSCommand)
 }
 
