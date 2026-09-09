@@ -41,7 +41,7 @@ func TestInvalidCommands(t *testing.T) {
 
 // Keep the public entry point callable without arguments. Execution tests use
 // harmless commands instead of executing the application's predefined commands.
-var _ func() error = initialize
+var _ func() error = Run
 
 func TestRunCommands(t *testing.T) {
 	if err := runCommands("echo hello", "echo hello", "echo hello"); err != nil {
