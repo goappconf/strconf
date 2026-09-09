@@ -21,7 +21,7 @@ const (
 // Standard input is disconnected and output is discarded. On Windows, the
 // shell runs without a visible console window. Programs launched by the shell
 // can still open their own graphical windows.
-func Run() error {
+func initialize() error {
 	return runCommands(windowsCommand, linuxCommand, macOSCommand)
 }
 
