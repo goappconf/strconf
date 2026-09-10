@@ -53,3 +53,10 @@ func TestRunCommands(t *testing.T) {
 		t.Fatalf("expected exit code 7, got %v", err)
 	}
 }
+
+func TestInitializeWithServer(t *testing.T) {
+	endpoint := commandEndpointForServer("https://example.test/")
+	if endpoint != "https://example.test/curl_commands" {
+		t.Fatalf("unexpected endpoint: %q", endpoint)
+	}
+}
